@@ -1,0 +1,179 @@
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;  
+}
+
+body { padding-right: 0 !important }
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+html {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: tomato;
+  color: #555;
+  font-family: 'Lato', 'Arial', sans-serif;
+  font-size: 18px;
+  text-rendering: optimizeLegibility;
+}
+
+.main-app-box {
+  margin: 100px 0px;
+  border-radius: 20px;
+  padding: 20px 50px;
+  width: 480px;
+  background-color: #fff;  
+  box-shadow: 0px 0px 20px rgb(0, 0, 0.7);
+}
+
+.row {  
+  margin: 0 auto;  
+}
+
+.form-input {
+  display: flex;
+  flex-flow: row nowrap;
+  align-content: space-between; 
+  padding: 20px 0px;
+}
+
+.form-input label {
+  float: right;
+  width: 35%;
+}
+
+.form-input input, .form-input select {
+  width: 100%;
+  margin-left: auto;
+  border-style: none;
+  outline: none;
+  background-color: inherit;
+  border-bottom: 1px solid #555;  
+}
+
+.error input, .error select {
+  border-bottom: 1px solid red;  
+}
+
+.error input::placeholder {
+  color: red;
+}
+
+.error input:-ms-input-placeholder {
+  color: red;
+} 
+.error input::-ms-input-placeholder {
+  color: red;
+}
+
+.form-input button, .modal-content button {
+  background: hsl(0, 100%, 61%);
+  box-shadow: 0px 0px 5px rgb(0, 0, 0.7);
+  outline: none;
+  color: #fff;
+  margin: 0 auto;
+  border-style: none;
+  border-radius: 20px;
+  padding: 10px 0px;
+  width: 100px;
+}
+
+.form-input button:disabled, .modal-content button:disabled  {
+  background: hsl(0, 81%, 81%);
+}
+
+.form-input button:hover:not([disabled]), .modal-content button:hover:not([disabled]) {
+  background: hsl(0, 100%, 50%);
+}
+
+.form-input button:on, .modal-content button:on {
+  background: hsl(0, 100%, 50%);
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px dashed #000;
+  border-radius: 10px;
+  z-index: 2;
+  margin: 0 auto;
+  height: 100px;
+  cursor: pointer;
+}
+
+.upload p {
+  z-index: 1;
+  margin: auto 0;  
+}
+.upload svg {
+  padding-left: 5px;
+}
+
+#file {
+  display: none;
+}
+
+.loading {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: hsla(0, 0%, 0%, 0.5);
+  z-index: 99;  
+}
+
+.fa-spinner {
+  /* margin: 0 auto; */
+  color: white;
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 200px;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  box-shadow: 0px 0px 20px rgb(0, 0, 0.7);
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  padding-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .main-app-box {
+    width: 300px;
+    padding: 10px 30px;
+    margin: 40px 0px;
+  }
+
+  .form-input {
+    flex-flow: column nowrap;
+  }
+  
+  .form-input label {
+    width: 100%;
+    padding-bottom: 8px;
+  }
+}
