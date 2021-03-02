@@ -1,7 +1,8 @@
 {
   "name": "sanity-sap-react",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "homepage": "/sanity/",
   "scripts": {
     "start": "react-app-rewired --max-http-header-size 21000 start",
     "build": "react-app-rewired build",

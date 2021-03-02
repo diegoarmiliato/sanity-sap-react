@@ -9,7 +9,6 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { loadingActions } from '@src/store/reducers/loading';
 import { messageBoxActions } from '@src/store/reducers/messageBox';
 import { apiTriggerBuild, apiTriggerBuildType } from '@src/api/jenkins';
-import { api } from '@src/api/api';
 
 interface inputType {
   state: keyof typeof sanityTriggerInitialState;
@@ -18,33 +17,45 @@ interface inputType {
   options: string[]
   placeholder: string;
   valid: boolean;
+  required: boolean;
   regex?: RegExp;    
 }
 
 let inputs : inputType[] = [
+  { state: 'buildExec', 
+    label: 'Build App', 
+    type: 'checkbox', 
+    options: [],
+    placeholder: '',
+    required: true,
+    valid: true},
   { state: 'dbUser', 
     label: 'Owner', 
     type: 'text', 
     options: [],
     placeholder: 'MasterData Schema (e.g TRSAP)',
+    required: true,
     valid: true},
   { state: 'dbPass', 
     label: 'Password', 
     type: 'text', 
     options: [],
     placeholder: 'Password of the Schema',
+    required: true,
     valid: true},
   { state: 'dbTNS', 
     label: 'TNS', 
     type: 'text', 
     options: [],
     placeholder: 'TNS Alias',
+    required: true,
     valid: true},
   { state: 'osgtVersion', 
     label: 'OSGT Version', 
     type: 'text', 
     options: [],
     placeholder: 'Version of OSGT Modules',
+    required: true,
     valid: true,
     regex: /[^0-9.]*/g},
   { state: 'itSapVersion', 
@@ -52,6 +63,7 @@ let inputs : inputType[] = [
     type: 'text', 
     options: [],
     placeholder: 'Version of SAP Interfaces',
+    required: true,
     valid: true,
     regex: /[^0-9.]*/g},
   { state: 'wsURL', 
@@ -59,6 +71,7 @@ let inputs : inputType[] = [
     type: 'url', 
     options: [],
     placeholder: 'URL of the Webservices',
+    required: false,
     valid: true},
   { state: 'dataCenter', 
     label: 'Data Center', 
@@ -68,12 +81,25 @@ let inputs : inputType[] = [
       'Peapod'
     ],
     placeholder: 'Eagan / Peapod',
+    required: true,
+    valid: true},
+  { state: 'environment', 
+    label: 'Environment', 
+    type: 'select',
+    options: [
+      'PROJ',
+      'QA',
+      'PROD'
+    ],
+    placeholder: 'PROJ / QA / PROD',
+    required: true,
     valid: true},
   { state: 'mailTo', 
     label: 'Email To', 
     type: 'email', 
     options: [],
     placeholder: 'Email address for sending report',
+    required: true,
     valid: true},
 ];
 
@@ -83,8 +109,11 @@ const ValidateForm = () : ReactElement => {
 
   const { sanityTrigger, loading } = state;
 
+  let fileInput : HTMLInputElement | null;
+
   const renderInput = (input: inputType) => {
-    if (input.type === 'select') {
+    switch (input.type) {
+    case 'select':
       return(
         <Input id={input.state}
           type={input.type} 
@@ -98,8 +127,17 @@ const ValidateForm = () : ReactElement => {
               <option key={it}>{it}</option>
             );})}
         </Input>
-      );
-    } else {
+      );        
+    case 'checkbox':
+      return(
+        <Input id={input.state}
+          type={input.type} 
+          placeholder={input.placeholder}
+          checked={(sanityTrigger[input.state] === 'true') ? true : false}                 
+          onChange={handleChange}
+          disabled={loading.active}/>
+      );           
+    default:
       return(
         <Input id={input.state}
           type={input.type} 
@@ -122,18 +160,26 @@ const ValidateForm = () : ReactElement => {
 
   const handleChange = (evt: FormEvent<HTMLInputElement>) => {
     const { currentTarget } = evt;
-    const { id, value } = currentTarget;    
+    const { id, value, checked, type } = currentTarget;    
     // Regex replaceAll
     const input = inputs.filter(it => it.state === id);
     const regex = input[0]['regex'];
     const newValue = (typeof regex !== 'undefined') ? value.replaceAll(regex, '') : value;    
     //
-    setInputError(id, newValue);
-    dispatch( { type: sanityTriggerActions.SANITY_CHANGE_FORMDATA, 
-      payload: {
-        param: id,
-        value: newValue.replaceAll(' ','')
-      } });
+    if (type !== 'checkbox') {
+      setInputError(id, newValue);
+      dispatch( { type: sanityTriggerActions.SANITY_CHANGE_FORMDATA, 
+        payload: {
+          param: id,
+          value: newValue.replaceAll(' ','')
+        } });
+    } else {
+      dispatch( { type: sanityTriggerActions.SANITY_CHANGE_FORMDATA, 
+        payload: {
+          param: id,
+          value: (checked) ? 'true' : 'false'
+        } });      
+    }
   };
 
   const setInputError = (id: string, value: string) => {
@@ -145,7 +191,7 @@ const ValidateForm = () : ReactElement => {
         : false;
     };
     inputs = inputs.map(input => {
-      if (input.state === id) input.valid = currentStatus(); 
+      if (input.state === id) if (input.required) input.valid = currentStatus(); 
       return input;
     });
   };
@@ -160,20 +206,22 @@ const ValidateForm = () : ReactElement => {
           body,
           callback: () => dispatch( { type: loadingActions.LOADING_OFF } )
         } });
+      if (header === 'Success') dispatch( { type: sanityTriggerActions.SANITY_FILE_REMOVE } );
     };
     const apiData : apiTriggerBuildType = {
-      buildExec: false,
+      buildExec: (sanityTrigger.buildExec === 'true') ? true : false,
       sUser: sanityTrigger.dbUser,
       sPass: sanityTrigger.dbPass,
       tns: sanityTrigger.dbTNS,
       dbConn: '',
       osgtVersion: sanityTrigger.osgtVersion,
       itSapVersion: sanityTrigger.itSapVersion,
-      wsUrl: sanityTrigger.wsURL,
-      parentBuild: '386',
+      wsUrl: sanityTrigger.wsURL.replace(/\/+$/, ''),
+      parentBuild: '0',
       dataCenter: sanityTrigger.dataCenter,
-      mailTo: sanityTrigger.mailTo
-
+      mailTo: sanityTrigger.mailTo,
+      environment: sanityTrigger.environment,
+      logUrl: sanityTrigger.fileUrl
     };
     apiTriggerBuild(apiData, apiCallback);
   };
@@ -223,7 +271,7 @@ const ValidateForm = () : ReactElement => {
 
   const triggerFileUpload = (files: FileList | null) => {
     if (files?.length == 1) {      
-      const callback = (url?: string) => {        
+      const callback = (url?: string) => {   
         dispatch( { type: sanityTriggerActions.SANITY_FILE_UPLOAD, 
           payload: {
             file: files[0].name,
@@ -236,13 +284,12 @@ const ValidateForm = () : ReactElement => {
   };
 
   const fileDownloadClear = () => {
-    const file = document.getElementById('file');
-    file?.setAttribute('value', '');
     dispatch({ type: sanityTriggerActions.SANITY_FILE_REMOVE });
+    if (fileInput) { fileInput.files = null; fileInput.value = '';}
   };
 
   const formIsValid = () => {
-    const inputsValid = inputs.filter(input => sanityTrigger[input.state].length == 0);
+    const inputsValid = inputs.filter(input => (sanityTrigger[input.state].length == 0 && input.required));
     const specificInputsValid = inputs.filter(input => {
       if (input.type === 'email' || input.type === 'url') {    
         const element = document.getElementById(input.state) as HTMLInputElement;
@@ -267,7 +314,7 @@ const ValidateForm = () : ReactElement => {
       <div className="row">
         <div className="upload" onClick={fileDownloadOnClick} onDrop={handleFileDivDrag} onDragOver={handleFileDivDrag} onDragLeave={handleFileDivDrag}> 
           {renderFileMessage()}
-          <input type="file" id="file" accept=".zip" disabled={loading.active} onChange={fileDownloadOnChange}/>
+          <input type="file" id="file" accept=".zip" disabled={loading.active} onChange={fileDownloadOnChange} ref={(ref) => fileInput = ref}/>
         </div>
       </div>
       <div className="row">

@@ -1,6 +1,7 @@
 import { actionType } from '..';
 
 export interface sanityTriggerType {
+  buildExec: string,
   dbUser: string,
   dbPass: string,
   dbTNS: string,
@@ -10,7 +11,8 @@ export interface sanityTriggerType {
   dataCenter: string,
   mailTo: string,
   fileUploaded: string,
-  fileUrl: string
+  fileUrl: string,
+  environment: string
 }
 
 export const sanityTriggerActions = {
@@ -19,31 +21,35 @@ export const sanityTriggerActions = {
   SANITY_FILE_REMOVE: 'SANITY_FILE_REMOVE'
 };
 
-// export const sanityTriggerInitialState: sanityTriggerType = {
-//   dbUser: '',
-//   dbPass: '',
-//   dbTNS: '',
-//   osgtVersion: '',
-//   itSapVersion: '',
-//   wsURL: '',
-//   dataCenter: '',
-//   mailTo: '',
-//   fileUploaded: '',
-//   fileUrl: ''
-// };
-
 export const sanityTriggerInitialState: sanityTriggerType = {
-  dbUser: 'SFWSAP',
-  dbPass: 'SFWSAP',
-  dbTNS: 'ORCL',
-  osgtVersion: '5.0.1',
-  itSapVersion: '5.0.1',
-  wsURL: 'http://c698kxksappi.intqa.thomsonreuters.com:8080',
-  dataCenter: 'Eagan',
-  mailTo: 'diegoarmiliato@gmail.com',
-  fileUploaded: '1',
-  fileUrl: 'http://1.com'
+  buildExec: 'false',
+  dbUser: '',
+  dbPass: '',
+  dbTNS: '',
+  osgtVersion: '',
+  itSapVersion: '',
+  wsURL: '',
+  dataCenter: '',
+  mailTo: '',
+  fileUploaded: '',
+  fileUrl: '',
+  environment: ''
 };
+
+// export const sanityTriggerInitialState: sanityTriggerType = {
+//   buildExec: 'true',
+//   dbUser: 'SFWSAP',
+//   dbPass: 'SFWSAP',
+//   dbTNS: 'ORCL',
+//   osgtVersion: '5.0.1',
+//   itSapVersion: '5.0.1',
+//   wsURL: 'http://c698kxksappi.intqa.thomsonreuters.com:8080',
+//   dataCenter: 'Eagan',
+//   mailTo: 'diegoarmiliato@gmail.com',
+//   fileUploaded: '1',
+//   fileUrl: 'http://1.com',
+//   environment: 'QA'
+// };
 
 export const sanityTriggerReducer = (state: sanityTriggerType, action: actionType) : sanityTriggerType => {
   const { payload, type } = action;

@@ -22,12 +22,12 @@ html {
   background-color: tomato;
   color: #555;
   font-family: 'Lato', 'Arial', sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   text-rendering: optimizeLegibility;
 }
 
 .main-app-box {
-  margin: 100px 0px;
+  margin: 60px 0px;
   border-radius: 20px;
   padding: 20px 50px;
   width: 480px;
@@ -43,21 +43,26 @@ html {
   display: flex;
   flex-flow: row nowrap;
   align-content: space-between; 
-  padding: 20px 0px;
+  padding: 13px 0px;
 }
 
 .form-input label {
   float: right;
-  width: 35%;
+  width: 25%;
 }
 
 .form-input input, .form-input select {
-  width: 100%;
+  width: 75%;
   margin-left: auto;
   border-style: none;
   outline: none;
   background-color: inherit;
   border-bottom: 1px solid #555;  
+}
+
+.form-input input[type="checkbox"] {
+  width: initial;
+  margin-left: initial;
 }
 
 .error input, .error select {
